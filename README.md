@@ -14,3 +14,11 @@ Identificar estudantes com atividades próximas do prazo de entrega e que ainda 
 - Docker
 - RabbitMQ (planejado)
 - Mailpit (planejado)
+
+## Serviços
+| Serviço | Pasta | Porta | Descrição |
+|---|---|---|---|
+| Acompanhamento | `acompanhamento-service/` | 8090 | consulta o Moodle e identifica alunos pendentes (publicação na fila: em andamento) |
+| Notificações | `notificacoes-service/` | 8091 | consome a fila, envia o e-mail (SMTP) e registra o resultado — veja o [README do serviço](notificacoes-service/README.md) |
+
+Infraestrutura (Docker): `docker compose up --build` sobe Moodle, RabbitMQ (painel em :15672), Mailpit (caixa de entrada em :8025) e o serviço de notificações.

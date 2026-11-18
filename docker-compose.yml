@@ -33,7 +33,55 @@ services:
       - moodle_code:/var/www/moodle
       - moodle_data:/var/www/moodledata
 
+  # ---- Fila e e-mail de teste ----
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: reengajamento-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # painel: http://localhost:15672 (guest/guest)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: reengajamento-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"     # caixa de entrada de teste: http://localhost:8025
+      - "1025:1025"     # SMTP
+
+  # ---- Microsserviço de notificações ----
+  notificacoes-service:
+    build: ./notificacoes-service
+    container_name: notificacoes-service
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "8091:8091"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: 1025
+      # para demonstração, reduza a espera entre tentativas (ms)
+      NOTIFICACOES_RETRY_ATRASO_MS: 30000
+      NOTIFICACOES_MAX_TENTATIVAS: 3
+    volumes:
+      - notificacoes_data:/data
+
 volumes:
   db_data:
   moodle_code:
   moodle_data:
+  rabbitmq_data:
+  notificacoes_data:
