@@ -1,0 +1,39 @@
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: moodle-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: moodle
+      MARIADB_USER: moodle
+      MARIADB_PASSWORD: moodlepassword
+      MARIADB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 30
+
+  moodle:
+    image: oksigenia/moodle:5.2
+    container_name: moodle-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      MOODLE_URL: http://localhost:8080
+      MOODLE_DB_PASSWORD: moodlepassword
+      MOODLE_ADMIN_PASSWORD: MoodleAdmin123!
+    volumes:
+      - moodle_code:/var/www/moodle
+      - moodle_data:/var/www/moodledata
+
+volumes:
+  db_data:
+  moodle_code:
+  moodle_data:
