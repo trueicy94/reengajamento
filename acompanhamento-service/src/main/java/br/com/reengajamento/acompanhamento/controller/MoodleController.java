@@ -1,8 +1,8 @@
-
 package br.com.reengajamento.acompanhamento.controller;
 
 import br.com.reengajamento.acompanhamento.service.MoodleService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +34,8 @@ public class MoodleController {
     }
 
     @GetMapping("/{courseId}/atividades/proximas-do-prazo")
-    public JsonNode buscarAtividadesProximasDoPrazo(@PathVariable Long courseId) {
+    public JsonNode buscarAtividadesProximasDoPrazo(
+            @PathVariable Long courseId) {
         return moodleService.buscarAtividadesProximasDoPrazo(courseId);
     }
 
@@ -42,7 +43,14 @@ public class MoodleController {
     public JsonNode buscarAlunosSemEntrega(
             @PathVariable Long courseId,
             @PathVariable Long assignmentId) {
-
         return moodleService.buscarAlunosSemEntrega(courseId, assignmentId);
+    }
+
+    @PostMapping("/{courseId}/processar-reengajamento")
+    public String processarReengajamento(
+            @PathVariable Long courseId) {
+        moodleService.processarReengajamento(courseId);
+
+        return "Processamento de reengajamento iniciado para o curso " + courseId;
     }
 }
