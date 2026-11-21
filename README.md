@@ -1,6 +1,7 @@
 # Serviço de Reengajamento de Estudantes
 
 Projeto acadêmico de Engenharia de Software II.
+Link para o vídeo do Youtube: https://youtu.be/WKB6Q5xXZaA
 
 ## Objetivo
 Identificar estudantes com atividades próximas do prazo de entrega e que ainda não realizaram a submissão, enviando lembretes por e-mail.
